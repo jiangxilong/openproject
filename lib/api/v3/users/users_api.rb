@@ -44,15 +44,30 @@ module API
               fail ::API::Errors::InvalidUserStatusTransition
             end
           end
+
+          def allow_only_admin
+            unless current_user.admin?
+              fail ::API::Errors::Unauthorized
+            end
+          end
         end
 
         resources :users do
+          get do
+            allow_only_admin
+
+            users = User.all.includes(:preference).order(:id)
+            UserCollectionRepresenter.new(users,
+                                          api_v3_paths.users,
+                                          current_user: current_user)
+          end
+
           params do
             requires :id, desc: 'User\'s id'
           end
           route_param :id do
             before do
-              @user  = User.find(params[:id])
+              @user = User.find(params[:id])
             end
 
             get do
@@ -70,9 +85,7 @@ module API
             namespace :lock do
               # Authenticate lock transitions
               before do
-                unless current_user.admin?
-                  fail ::API::Errors::Unauthorized
-                end
+                allow_only_admin
               end
 
               desc 'Set lock on user account'
