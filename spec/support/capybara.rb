@@ -1,3 +1,14 @@
+require 'capybara/rspec'
+require 'rack_session_access/capybara'
+
+RSpec.configure do |config|
+  Capybara.default_max_wait_time = 4
+end
+
+Rails.application.config do
+  config.middleware.use RackSessionAccess::Middleware
+end
+
 Capybara.register_driver :selenium do |app|
   require 'selenium/webdriver'
 
@@ -23,5 +34,4 @@ Capybara.register_driver :selenium do |app|
   )
 end
 
-# Use selenium until we upgraded jenkins workers
 Capybara.javascript_driver = :selenium
