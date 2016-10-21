@@ -50,8 +50,10 @@ function halResourceTypesConfig(halResourceTypes:HalResourceTypesService) {
     },
     Relation: {
       className: 'RelationResource',
-      from: 'WorkPackageResource',
-      to: 'WorkPackageResource'
+      attrTypes: {
+        from: 'WorkPackage',
+        to: 'WorkPackage'
+      }
     },
     Error: 'ErrorResource',
     User: 'UserResource',
